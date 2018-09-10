@@ -1,0 +1,167 @@
+---
+title: "Alphonso"
+author: "Yuxi Chen"
+date: "8/22/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+library(readxl)
+names = c('Id','Title','Brand','Product','Category','Network','NetworkType','Show','Date','Time','PodPosition','Dayparts','Tag','Co-OpBrand','Co-OpProduct','Duration','EQUnits','BroadcastYear','BroadcastMonth','BroadcastWeek','DayOfWeek',	'HourOfDay',	'TimeZone')
+google_airings <- read_excel('/Users/yuxi/Downloads/Alphonso-Airings-Report-HU7pEmw-1534936999796.xlsx', col_names=names, skip=10)
+googlehome <- google_airings[grepl('Google Home', google_airings[['Product']]), ]
+glimpse(googlehome)
+```
+```{r}
+amazon_airings <- read_excel('/Users/yuxi/Downloads/Alphonso-Airings-Report-6LDRpqD-1534920719923.xlsx', sheet='Sheet1', col_names=names, skip=10)
+amazonecho <- amazon_airings[grepl('Amazon Echo', amazon_airings[['Product']]), ]
+
+amazonecho$EQUnits = as.numeric(amazonecho$EQUnits)
+amazonecho$Duration  = as.numeric(amazonecho$Duration)
+amazonecho$BroadcastYear = as.numeric(amazonecho$BroadcastYear)
+amazonecho$BroadcastWeek = as.numeric(amazonecho$BroadcastWeek)
+amazonecho$DayOfWeek = as.numeric(amazonecho$DayOfWeek)
+amazonecho$HourOfDay = as.numeric(amazonecho$HourOfDay)
+
+glimpse(amazonecho)
+```
+
+```{r}
+apple_airings <- read_excel('/Users/yuxi/Downloads/Alphonso-Airings-Report-3J5flNP-1534947755818.xlsx', col_names=names, skip=10)
+applehomepod <- apple_airings[grepl('Apple HomePod', apple_airings[['Product']]), ]
+
+applehomepod$EQUnits = as.numeric(applehomepod$EQUnits)
+applehomepod$Duration  = as.numeric(applehomepod$Duration)
+applehomepod$BroadcastYear = as.numeric(applehomepod$BroadcastYear)
+applehomepod$BroadcastWeek = as.numeric(applehomepod$BroadcastWeek)
+applehomepod$DayOfWeek = as.numeric(applehomepod$DayOfWeek)
+applehomepod$HourOfDay = as.numeric(applehomepod$HourOfDay)
+
+
+glimpse(applehomepod)
+```
+```{r}
+amazonpie <- ggplot(amazonecho, aes(x = "", fill = factor(Dayparts))) + 
+  geom_bar(width = 1) +
+  theme(axis.line = element_blank(), 
+        plot.title = element_text(hjust=0.5)) + 
+  labs(fill="Dayparts", 
+       x=NULL, 
+       y=NULL, 
+       title="Pie Chart of Dayparts", 
+       caption="Source: Amazon Echo")
+  
+amazonpie + coord_polar(theta = "y", start=0)
+```
+```{r}
+googlepie <- ggplot(googlehome, aes(x = "", fill = factor(Dayparts))) + 
+  geom_bar(width = 1) +
+  theme(axis.line = element_blank(), 
+        plot.title = element_text(hjust=0.5)) + 
+  labs(fill="Dayparts", 
+       x=NULL, 
+       y=NULL, 
+       title="Pie Chart of Dayparts", 
+       caption="Source: Google Home")
+  
+googlepie + coord_polar(theta = "y", start=0)
+```
+```{r}
+applepie <- ggplot(applehomepod, aes(x = "", fill = factor(Dayparts))) + 
+  geom_bar(width = 1) +
+  theme(axis.line = element_blank(), 
+        plot.title = element_text(hjust=0.5)) + 
+  labs(fill="Dayparts", 
+       x=NULL, 
+       y=NULL, 
+       title="Pie Chart of Dayparts", 
+       caption="Source: Apple Homepod")
+  
+applepie + coord_polar(theta = "y", start=0)
+```
+```{r}
+amazonecho$Date <- as.Date(amazonecho$Date, '%m/%d/%y')
+amazonhis <- ggplot(amazonecho, aes(x=Date))
+
+amazonhis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Product Airings across the Quarter", 
+       subtitle="Amazon Echo")  
+```
+```{r}
+googlehome$Date <- as.Date(googlehome$Date, '%m/%d/%y')
+googlehis <- ggplot(googlehome, aes(x=Date))
+
+googlehis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Product Airings across the Quarter", 
+       subtitle="Google Home")  
+```
+```{r}
+applehomepod$Date <- as.Date(applehomepod$Date, '%m/%d/%y')
+applehis <- ggplot(applehomepod, aes(x=Date))
+
+applehis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Product Airings across the Quarter", 
+       subtitle="Apple Homepod")  
+```
+```{r}
+amazonDhis <- ggplot(amazonecho, aes(x=Date))
+
+amazonDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Airing Dayparts across the Quarter", 
+       subtitle="Amazon Echo")  
+```
+```{r}
+googleDhis <- ggplot(googlehome, aes(x=Date))
+
+googleDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Airing Dayparts across the Quarter", 
+       subtitle="Google Home")  
+```
+```{r}
+appleDhis <- ggplot(applehomepod, aes(x=Date))
+
+appleDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Airing Dayparts across the Quarter", 
+       subtitle="Apple Homepod")  
+```
+```{r}
+cnt_a <- aggregate(EQUnits ~ Date, data = amazonecho, FUN = length)
+cnt_a <- complete(cnt_a, Date = seq.Date(min(Date), max(Date), by="day"))
+cnt_a[is.na(cnt_a)] <- 0
+colnames(cnt_a) <- c('Date','NumberofAirings')
+
+cnt_g <- aggregate(EQUnits ~ Date, data = googlehome, FUN = length)
+cnt_g <- complete(cnt_g, Date = seq.Date(min(Date), max(Date), by="day"))
+cnt_g[is.na(cnt_g)] <- 0
+colnames(cnt_g) <- c('Date','NumberofAirings')
+
+cnt_ap <- aggregate(EQUnits ~ Date, data = applehomepod, FUN = length)
+cnt_ap <- complete(cnt_ap, Date = seq.Date(min(Date), max(Date), by="day"))
+cnt_ap[is.na(cnt_ap)] <- 0
+colnames(cnt_ap) <- c('Date','NumberofAirings')
+
+ggplot() +
+  geom_line(aes(x = cnt_a$Date, y = cnt_a$NumberofAirings, colour = "Amazon Echo")) +
+  geom_line(aes(x = cnt_g$Date, y = cnt_g$NumberofAirings, colour = "Google Home")) +
+  geom_line(aes(x = cnt_ap$Date, y = cnt_ap$NumberofAirings, colour = "Apple Homepod")) +
+    labs(title="Time Series Chart", 
+       subtitle="# of Airings across three brands' Smart Home Devices", 
+       y="Number of Airings",
+       x="Date")
+```
