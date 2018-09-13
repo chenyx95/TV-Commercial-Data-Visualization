@@ -1,5 +1,5 @@
 ---
-title: "Alphonso"
+title: "Major Brands’ Smart Home Speaker TV Campaign"
 author: "Yuxi Chen"
 date: "8/22/2018"
 output: html_document
@@ -8,9 +8,18 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Major Brands’ Smart Home Speaker TV Campaign
+
+## Three Major Players: Amazon, Google, Apple
+
+It’s getting easier for everyone to set up their smart home, but customers vary in choosing the platform for unifying their smart home devices.
+Amazon, Google and Apple are the major players in the smart home arena, with their smart speakers, ecosystems and voice assistants on hand for home automation.
+With brands’ data provided by Alphonso, this exploratory analysis aims to uncover three brands’ difference in their TV campaign strategies for the smart speaker products.
 ```{r}
 library(tidyverse)
 library(readxl)
+```
+```{r}
 names = c('Id','Title','Brand','Product','Category','Network','NetworkType','Show','Date','Time','PodPosition','Dayparts','Tag','Co-OpBrand','Co-OpProduct','Duration','EQUnits','BroadcastYear','BroadcastMonth','BroadcastWeek','DayOfWeek',	'HourOfDay',	'TimeZone')
 google_airings <- read_excel('/Users/yuxi/Downloads/Alphonso-Airings-Report-HU7pEmw-1534936999796.xlsx', col_names=names, skip=10)
 googlehome <- google_airings[grepl('Google Home', google_airings[['Product']]), ]
@@ -45,6 +54,13 @@ applehomepod$HourOfDay = as.numeric(applehomepod$HourOfDay)
 glimpse(applehomepod)
 ```
 ```{r}
+amazonecho$Date <- as.Date(amazonecho$Date, '%m/%d/%y')
+googlehome$Date <- as.Date(googlehome$Date, '%m/%d/%y')
+applehomepod$Date <- as.Date(applehomepod$Date, '%m/%d/%y')
+```
+
+## Daypart Analysis
+```{r}
 amazonpie <- ggplot(amazonecho, aes(x = "", fill = factor(Dayparts))) + 
   geom_bar(width = 1) +
   theme(axis.line = element_blank(), 
@@ -52,12 +68,11 @@ amazonpie <- ggplot(amazonecho, aes(x = "", fill = factor(Dayparts))) +
   labs(fill="Dayparts", 
        x=NULL, 
        y=NULL, 
-       title="Pie Chart of Dayparts", 
-       caption="Source: Amazon Echo")
+       title="Amazon Echo", 
+       subtitle="Number of Records during Different Day Parts")
   
 amazonpie + coord_polar(theta = "y", start=0)
-```
-```{r}
+
 googlepie <- ggplot(googlehome, aes(x = "", fill = factor(Dayparts))) + 
   geom_bar(width = 1) +
   theme(axis.line = element_blank(), 
@@ -65,12 +80,11 @@ googlepie <- ggplot(googlehome, aes(x = "", fill = factor(Dayparts))) +
   labs(fill="Dayparts", 
        x=NULL, 
        y=NULL, 
-       title="Pie Chart of Dayparts", 
-       caption="Source: Google Home")
+       title="Google Home", 
+       subtitle="Number of Records during Different Day Parts")
   
 googlepie + coord_polar(theta = "y", start=0)
-```
-```{r}
+
 applepie <- ggplot(applehomepod, aes(x = "", fill = factor(Dayparts))) + 
   geom_bar(width = 1) +
   theme(axis.line = element_blank(), 
@@ -78,68 +92,155 @@ applepie <- ggplot(applehomepod, aes(x = "", fill = factor(Dayparts))) +
   labs(fill="Dayparts", 
        x=NULL, 
        y=NULL, 
-       title="Pie Chart of Dayparts", 
-       caption="Source: Apple Homepod")
+       title="Apple Homepod", 
+       subtitle="Number of Records during Different Day Parts")
   
 applepie + coord_polar(theta = "y", start=0)
 ```
-```{r}
-amazonecho$Date <- as.Date(amazonecho$Date, '%m/%d/%y')
-amazonhis <- ggplot(amazonecho, aes(x=Date))
 
-amazonhis + geom_bar(aes(fill=Product), 
-                   width = .5) +  
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Product Airings across the Quarter", 
-       subtitle="Amazon Echo")  
-```
-```{r}
-googlehome$Date <- as.Date(googlehome$Date, '%m/%d/%y')
-googlehis <- ggplot(googlehome, aes(x=Date))
-
-googlehis + geom_bar(aes(fill=Product), 
-                   width = .5) +  
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Product Airings across the Quarter", 
-       subtitle="Google Home")  
-```
-```{r}
-applehomepod$Date <- as.Date(applehomepod$Date, '%m/%d/%y')
-applehis <- ggplot(applehomepod, aes(x=Date))
-
-applehis + geom_bar(aes(fill=Product), 
-                   width = .5) +  
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Product Airings across the Quarter", 
-       subtitle="Apple Homepod")  
-```
+From April 1st to August 21st, TV commercials of Amazon’s entire Echo product line has been aired 8013 times, Google Home product line 3275 times and Apple Homepod 136 times.
+While Amazon focused on airing in the day and prime dayparts, Apple focused on day, early morning and prime dayparts, and Google ran evenly in all dayparts.
 ```{r}
 amazonDhis <- ggplot(amazonecho, aes(x=Date))
 
 amazonDhis + geom_bar(aes(fill=Dayparts), 
                    width = .5) +  
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Airing Dayparts across the Quarter", 
-       subtitle="Amazon Echo")  
-```
-```{r}
+  labs(title="Amazon Echo", 
+       subtitle="Aggregated by day part")  
+
 googleDhis <- ggplot(googlehome, aes(x=Date))
 
 googleDhis + geom_bar(aes(fill=Dayparts), 
                    width = .5) +  
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Airing Dayparts across the Quarter", 
-       subtitle="Google Home")  
-```
-```{r}
+  labs(title="Google Home", 
+       subtitle="Aggregated by day part")  
+
 appleDhis <- ggplot(applehomepod, aes(x=Date))
 
 appleDhis + geom_bar(aes(fill=Dayparts), 
                    width = .5) +  
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Airing Dayparts across the Quarter", 
-       subtitle="Apple Homepod")  
+  labs(title="Apple Homepod", 
+       subtitle="Aggregated by day part")  
 ```
+
+The plots showcased that Apple has adjusted the number of commercials airing according to day of week, while Amazon and Google didn’t.
+
+```{r}
+amazonDhis <- ggplot(amazonecho, aes(x=DayOfWeek))
+
+amazonDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Amazon Echo", 
+       subtitle="Aggregated by day part")  
+
+googleDhis <- ggplot(googlehome, aes(x=DayOfWeek))
+
+googleDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Google Home", 
+       subtitle="Aggregated by day part")  
+
+appleDhis <- ggplot(applehomepod, aes(x=DayOfWeek))
+
+appleDhis + geom_bar(aes(fill=Dayparts), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Apple Homepod", 
+       subtitle="Aggregated by day part")  
+```
+
+## Comparing the total number of records according to the time of day
+
+```{r}
+cnt_a2 <- aggregate(EQUnits ~ format(strptime(amazonecho$Time, "%I:%M:%S %p"), "%H"), data = amazonecho, FUN = length)
+colnames(cnt_a2) <- c('Time','NumberofAirings')
+
+cnt_g2 <- aggregate(EQUnits ~ format(strptime(googlehome$Time, "%I:%M:%S %p"), "%H"), data = googlehome, FUN = length)
+colnames(cnt_g2) <- c('Time','NumberofAirings')
+
+cnt_ap2 <- aggregate(EQUnits ~ format(strptime(applehomepod$Time, "%I:%M:%S %p"), "%H"), data = applehomepod, FUN = length)
+colnames(cnt_ap2) <- c('Time','NumberofAirings')
+
+ggplot() +
+  geom_line(aes(x = cnt_a2$Time, y = cnt_a2$NumberofAirings, colour = "Amazon Echo", group=1)) +
+  geom_line(aes(x = cnt_g2$Time, y = cnt_g2$NumberofAirings, colour = "Google Home", group=1)) +
+  geom_line(aes(x = cnt_ap2$Time, y = cnt_ap2$NumberofAirings, colour = "Apple Homepod", group=1)) +
+    labs(title="Number of Records vs. Hour of Day", 
+         subtitle="Time series plot",
+         y="Number of Airings",
+         x="Time")
+```
+
+Different from Google and Apple, Amazon seems to have a specific airing strategy regarding the time of day.
+There’s an upward trend in the number of TV ads from early morning to midnight.
+Google and Apple may consider adjusting their strategies to compete with Amazon.
+
+## What about Product?
+```{r}
+amazonhis <- ggplot(amazonecho, aes(x=Date))
+
+amazonhis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Amazon Echo", 
+       subtitle="Aggregated by products")  
+
+googlehis <- ggplot(googlehome, aes(x=Date))
+
+googlehis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Google Home", 
+       subtitle="Aggregated by products")  
+
+applehis <- ggplot(applehomepod, aes(x=Date))
+
+applehis + geom_bar(aes(fill=Product), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Apple Homepod", 
+       subtitle="Aggregated by products")  
+```
+
+Amazon focused on advertising its Echo Spot product in April, May and mid July and focused on both Echo and Echo Spot in August.
+
+## Length vs. Dayparts
+```{r}
+amazonecho$Duration <- as.factor(amazonecho$Duration)
+googlehome$Duration <- as.factor(googlehome$Duration)
+applehomepod$Duration <- as.factor(applehomepod$Duration)
+
+dur1 <- ggplot(amazonecho, aes(x=Dayparts))
+dur1 + geom_bar(aes(fill=Duration), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Amazon Echo", 
+       subtitle="Aggregated by duration") 
+
+dur2 <- ggplot(googlehome, aes(x=Dayparts))
+dur2 + geom_bar(aes(fill=Duration), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Google Home", 
+       subtitle="Aggregated by duration") 
+
+dur3 <- ggplot(applehomepod, aes(x=Dayparts))
+dur3 + geom_bar(aes(fill=Duration), 
+                   width = .5) +  
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Apple Homepod", 
+       subtitle="Aggregated by duration") 
+
+```
+
+Almost all of Google’s campaign were 90 seconds long, which were very long especially when compared with Amazon and Apple’s. For better allocation of spending, Google should consider running its longer length commercials during the less expensive dayparts. And, shorter length commercials are valuable during early fringe and prime time for their cost-effectiveness and performance during these dayparts.
+
+## Across the Quarter
 ```{r}
 cnt_a <- aggregate(EQUnits ~ Date, data = amazonecho, FUN = length)
 cnt_a <- complete(cnt_a, Date = seq.Date(min(Date), max(Date), by="day"))
@@ -157,11 +258,21 @@ cnt_ap[is.na(cnt_ap)] <- 0
 colnames(cnt_ap) <- c('Date','NumberofAirings')
 
 ggplot() +
-  geom_line(aes(x = cnt_a$Date, y = cnt_a$NumberofAirings, colour = "Amazon Echo")) +
-  geom_line(aes(x = cnt_g$Date, y = cnt_g$NumberofAirings, colour = "Google Home")) +
-  geom_line(aes(x = cnt_ap$Date, y = cnt_ap$NumberofAirings, colour = "Apple Homepod")) +
-    labs(title="Time Series Chart", 
-       subtitle="# of Airings across three brands' Smart Home Devices", 
-       y="Number of Airings",
-       x="Date")
+  geom_line(aes(x = cnt_a$Date, y = cnt_a$NumberofAirings, color = "Amazon Echo")) +
+  geom_line(aes(x = cnt_g$Date, y = cnt_g$NumberofAirings, color = "Google Home")) +
+  geom_line(aes(x = cnt_ap$Date, y = cnt_ap$NumberofAirings, color = "Apple Homepod")) +
+    labs(title="Number of Records vs. Date", 
+        subtitle="Time series plot",
+        y="Number of Records",
+        x="Date")
 ```
+
+Amazon has a large gap between June and early July during which it didn‘t advertise any of its smart speaker products on TV.
+Google didn’t focus on advertising its smart speaker at the beginning of the quarter.
+Apple did not heavily advertise its smart speakers throughout the quarter. It’s possible that the smart speaker and voice assistant market is not the company’s main focus now.
+During last third of the quarter, the number of commercials that Amazon and Google aired fluctuated vigorously.
+
+
+## Summary and Recommendations
+
+Overall, Amazon seemed to have more customization on its TV campaign plan. It adjusted its allocation of spending according to its product line, time of day and other unknown factors. To compete with Amazon, Apple and Google need to be sure that plans are executed and customized based on specific needs. Mixing different types and lengths of commercials while venturing into various dayparts may help better building brands’ awareness and increasing sales.
